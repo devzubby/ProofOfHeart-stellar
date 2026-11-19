@@ -78,3 +78,31 @@ This contract uses Soroban `Address::require_auth()` checks to ensure only the c
 | `get_saved_count(user)` | no auth |
 | `get_saved_campaigns(user)` | no auth |
 
+## Additional state-changing entrypoints
+
+The following methods were added after the original matrix. Unless noted,
+these methods reject while the contract is paused with `ContractPaused`; the
+listed authorization check happens before any state is changed.
+
+| Public method | Who must authorize | Pause behaviour and failure modes |
+| --- | --- | --- |
+| `emergency_withdraw(admin, campaign_id, recipient)` | stored admin | Works while paused; rejects unauthorized callers, missing/inactive campaigns, invalid recipients, or an existing proposal. Starts the timelock only after validation. |
+| `cancel_emergency_withdrawal(admin, campaign_id)` | stored admin | Works while paused; rejects unauthorized callers or when no pending proposal exists. |
+| `execute_emergency_withdrawal(admin, campaign_id)` | stored admin | Works while paused; rejects unauthorized callers, missing proposals, or an unexpired timelock. |
+| `rescue_stranded_tokens(admin, token, to, amount)` | stored admin | Works while paused; rejects unauthorized callers, platform/escrow tokens, invalid recipients, or non-positive amounts. |
+| `set_milestones(campaign_id, milestones)` | campaign creator | Rejects while paused, for inactive campaigns, or for invalid schedules (empty, malformed, or non-100% shares). |
+| `verify_milestone(admin, campaign_id, milestone_id)` | stored admin | Rejects while paused, for missing/inactive campaigns, missing milestones, or an unknown/already verified milestone. |
+| `batch_verify_milestones(admin, campaign_id)` | stored admin | Rejects while paused, for missing/inactive campaigns, or when no milestone plan exists; already verified milestones are skipped. |
+| `claim_milestone(campaign_id, milestone_id)` | campaign creator | Rejects while paused, for missing/inactive campaigns, unverified milestones, or a milestone already claimed. |
+| `delegate_votes(delegator, delegate)` | `delegator` | Rejects while paused, self-delegation, invalid delegates, or a delegation cycle. |
+| `undelegate_votes(delegator)` | `delegator` | Rejects while paused or when no active delegation exists. |
+| `cast_delegated_vote(campaign_id, delegate, delegator, approve)` | `delegate` | Rejects while paused, unless `delegator` has delegated to `delegate`, or if the vote is otherwise invalid/already cast. |
+| `set_token_allowed(token, allowed)` | stored admin | Works while paused; rejects unauthorized callers and invalid token configuration. |
+| `set_cancellation_penalty_bps(admin, penalty_bps)` | stored admin | Works while paused; rejects unauthorized callers or values above the configured maximum. |
+| `record_proof_of_impact(campaign_id, verifier, proof_hash)` | `verifier` | Rejects while paused, for invalid campaign state, or when `verifier` does not authorize the submitted proof. |
+| `censure_comment(campaign_id, comment_hash, reason)` | stored admin | Rejects while paused or for unauthorized callers; repeated censure is idempotent. |
+| `uncensure_comment(campaign_id, comment_hash)` | stored admin | Rejects while paused or for unauthorized callers; unknown records are handled by the comment module. |
+
+All read-only methods, including the corresponding `get_*`, `is_*`, list, and
+report methods, require no authorization and do not mutate storage.
+

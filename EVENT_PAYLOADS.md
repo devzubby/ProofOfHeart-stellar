@@ -630,4 +630,76 @@ Every `publish(...)` call in the contract, with its topics, data shape, and the 
 | Data   | `creator_share: i128` |
 | Source | `src/revenue.rs` — `deposit_revenue()` |
 
-Total: 60 documented publish() call sites
+Total: 70 documented publish() call sites
+
+## Events added after the original inventory
+
+### `campaign_token_allowlisted`
+| Field | Value |
+|---|---|
+| Topics | `("campaign_token_allowlisted", admin: Address)` |
+| Data | `(token: Address, allowed: bool)` |
+| Source | `src/admin.rs` — `set_campaign_token_allowed()` |
+
+### `campaign_token_set`
+| Field | Value |
+|---|---|
+| Topics | `("campaign_token_set", campaign_id: u32)` |
+| Data | `token: Address` |
+| Source | `src/campaigns/create.rs` — campaign creation |
+
+### `category_voting_threshold_removed`
+| Field | Value |
+|---|---|
+| Topics | `("category_voting_threshold_removed", category: u32)` |
+| Data | `()` |
+| Source | `src/admin.rs` — category threshold removal |
+
+### `emergency_pause_signers_updated`
+| Field | Value |
+|---|---|
+| Topics | `("emergency_pause_signers_updated", admin: Address)` |
+| Data | `signer_count: u32` |
+| Source | `src/admin.rs` — `set_emergency_pause_signers()` |
+
+### `emergency_paused`
+| Field | Value |
+|---|---|
+| Topics | `("emergency_paused", caller: Address)` |
+| Data | `()` |
+| Source | `src/admin.rs` — `pause()` |
+
+### `milestones_set`
+| Field | Value |
+|---|---|
+| Topics | `("milestones_set", campaign_id: u32)` |
+| Data | `milestone_count: u32` |
+| Source | `src/milestones.rs` — `set_milestones()` |
+
+### `milestone_verified`
+| Field | Value |
+|---|---|
+| Topics | `("milestone_verified", campaign_id: u32, milestone_id: u32)` |
+| Data | `()` |
+| Source | `src/milestones.rs` — `verify_milestone()` |
+
+### `milestones_batch_verified`
+| Field | Value |
+|---|---|
+| Topics | `("milestones_batch_verified", campaign_id: u32)` |
+| Data | `newly_verified: u32` |
+| Source | `src/milestones.rs` — batch milestone verification |
+
+### `payout_marker`
+| Field | Value |
+|---|---|
+| Topics | `("payout_marker", campaign_id: u32)` |
+| Data | `ledger_sequence: u32` |
+| Source | `src/campaigns/withdraw.rs` — payout marker persistence |
+
+### `token_update_delay_updated`
+| Field | Value |
+|---|---|
+| Topics | `("token_update_delay_updated",)` |
+| Data | `(old_delay_secs: u64, new_delay_secs: u64)` |
+| Source | `src/admin.rs` — token update delay configuration |

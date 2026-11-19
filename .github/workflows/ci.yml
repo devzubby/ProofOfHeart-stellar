@@ -67,6 +67,12 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
+  event-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/check-events.sh
+
   check:
     runs-on: ubuntu-latest
     steps:
